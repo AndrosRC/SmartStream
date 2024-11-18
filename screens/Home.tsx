@@ -1,15 +1,38 @@
-import React from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
 const Home = ({ navigation }: any) => {
-    const VisualizarTomas =() => {
-        navigation.navigate('VisualizarTomas');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleLogin = async () => {
+        try {
+            const response = await fetch('http://localhost:3000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ correo_electronico: email, contrasena: password }),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                Alert.alert('Inicio de sesión exitoso');
+                navigation.navigate('VisualizarTomas');
+            } else {
+                Alert.alert('Error', data.message || 'Credenciales incorrectas');
+            }
+        } catch (error) {
+            console.error('Error en el servidor:', error);
+            Alert.alert('Error', 'Error en el servidor');
+        }
     };
-    const Registro =() => {
+
+    const Registro = () => {
         navigation.navigate('Registro');
     };
 
-    
     return (
         <View style={styles.container}>
           <View style={styles.header}>
@@ -28,20 +51,31 @@ const Home = ({ navigation }: any) => {
             <Text style={styles.title}>INICIO DE SESIÓN</Text>
     
             <Text style={styles.label}>INGRESA TU CORREO:</Text>
-            <TextInput style={styles.input} placeholder="Correo electrónico" placeholderTextColor="#000" />
+            <TextInput
+              style={styles.input}
+              placeholder="Correo electrónico"
+              placeholderTextColor="#000"
+              value={email}
+              onChangeText={setEmail}
+            />
     
             <Text style={styles.label}>INGRESA TU CONTRASEÑA:</Text>
-            <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry={true} placeholderTextColor="#000" />
+            <TextInput
+              style={styles.input}
+              placeholder="Contraseña"
+              secureTextEntry={true}
+              placeholderTextColor="#000"
+              value={password}
+              onChangeText={setPassword}
+            />
 
             <TouchableOpacity onPress={Registro} style={styles.forgotPassword}>
                 <Text style={styles.forgotPassword}>¿NO TIENES UNA CUENTA?</Text>
             </TouchableOpacity>
     
-            <TouchableOpacity onPress={VisualizarTomas} style={styles.button}>
+            <TouchableOpacity onPress={handleLogin} style={styles.button}>
               <Text style={styles.buttonText}>INICIAR SESIÓN</Text>
             </TouchableOpacity>
-
-            
           </View>
         </View>
       );
