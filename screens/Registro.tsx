@@ -1,10 +1,53 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 
 const Registro = ({ navigation }: any) => {
-  const Home =() => {
-    navigation.navigate('Home');
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleRegister = async () => {
+    if (!nombre || !email || !password) {
+      // Usamos window.alert en lugar de Alert.alert para la web
+      window.alert('Todos los campos son obligatorios');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/registro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nombre, correo_electronico: email, contrasena: password }),
+      });
+
+      const data = await response.json();
+      console.log('Respuesta del servidor:', data);
+
+      if (response.ok) {
+        // Usamos window.alert en lugar de Alert.alert para la web
+        window.alert('Registro exitoso');
+        
+        // Navegar a Home después de la alerta
+        if (navigation) {
+          navigation.navigate('Home');
+        } else {
+          console.error("Navigation object is not available.");
+        }
+      } else {
+        console.log('Error al registrar:', data.message);
+        // Usamos window.alert en lugar de Alert.alert para la web
+        window.alert(data.message || 'Error al registrar');
+      }
+
+    } catch (error) {
+      console.error('Error en el servidor:', error);
+      // Usamos window.alert en lugar de Alert.alert para la web
+      window.alert('Error en el servidor');
+    }
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -24,17 +67,36 @@ const Registro = ({ navigation }: any) => {
 
         {/* Campo para el nombre completo */}
         <Text style={styles.label}>INGRESA TU NOMBRE COMPLETO:</Text>
-        <TextInput style={styles.input} placeholder="Nombre completo" placeholderTextColor="#000" />
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre completo"
+          placeholderTextColor="#000"
+          value={nombre}
+          onChangeText={(text) => setNombre(text)}
+        />
 
         {/* Campo para el correo electrónico */}
         <Text style={styles.label}>INGRESA TU CORREO:</Text>
-        <TextInput style={styles.input} placeholder="Correo electrónico" placeholderTextColor="#000" />
+        <TextInput
+          style={styles.input}
+          placeholder="Correo electrónico"
+          placeholderTextColor="#000"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+        />
 
         {/* Campo para la contraseña */}
         <Text style={styles.label}>INGRESA TU CONTRASEÑA:</Text>
-        <TextInput style={styles.input} placeholder="Contraseña" secureTextEntry={true} placeholderTextColor="#000" />
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          secureTextEntry={true}
+          placeholderTextColor="#000"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+        />
 
-        <TouchableOpacity style={styles.button} onPress={Home}>
+        <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>REGISTRARSE</Text>
         </TouchableOpacity>
       </View>

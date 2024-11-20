@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors'); // Importa el paquete cors
 const connection = require('./db');
 const loginController = require('./routes/inicioSesion.js');
+const registro = require('./routes/registroSesion.js')
 
 const app = express();
 const port = 3000;
@@ -14,6 +15,8 @@ app.use(bodyParser.json());
 // Endpoint de inicio de sesión
 // Definir la ruta de inicio de sesión
 app.post('/login', loginController);
+app.post('/registro', registro);
+
 
 
 // Endpoint de ejemplo para obtener todos los usuarios
