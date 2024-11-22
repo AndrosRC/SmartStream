@@ -1,13 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const VisualizarTomas = ({ navigation }: any) => {
-  const AgregarToma =() => {
+const VisualizarTomas = ({ route, navigation }: any) => {
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getUserId = async () => {
+      // Intenta obtener el userId desde AsyncStorage si no lo pasaron desde la navegación
+      const storedUserId = await AsyncStorage.getItem('userId');
+      if (storedUserId) {
+        setUserId(storedUserId);
+      } else if (route.params?.userId) {
+        // Si el userId fue pasado por navegación, usarlo
+        setUserId(route.params.userId);
+      } else {
+        console.error('No se pudo obtener el userId');
+      }
+    };
+
+    getUserId();
+  }, [route.params]);
+
+  const AgregarToma = () => {
     navigation.navigate('AgregarToma');
   };
-  const PruebaArduino =() => {
+
+  const PruebaArduino = () => {
     navigation.navigate('PruebaArduino');
-  }; 
+  };
+
+  const PerfilUsuario = () => {
+    navigation.navigate('PerfilUsuario');
+  };
+
+  if (!userId) {
+    return <Text>Cargando...</Text>; // Espera a que userId esté disponible
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -16,7 +46,7 @@ const VisualizarTomas = ({ navigation }: any) => {
           style={styles.logo}
         />
         <Text style={styles.headerTitle}>SmartStream</Text>
-        <TouchableOpacity style={styles.profileButton}>
+        <TouchableOpacity style={styles.profileButton} onPress={PerfilUsuario}>
           <Image
             source={require('@/assets/images/iconoPerfil.png')}
             style={styles.profileIcon}
@@ -40,6 +70,7 @@ const VisualizarTomas = ({ navigation }: any) => {
 };
 
 export default VisualizarTomas;
+
 
 const styles = StyleSheet.create({
   container: {
@@ -116,13 +147,11 @@ const styles = StyleSheet.create({
     paddingVertical: 15,           // Espaciado vertical interno
     paddingHorizontal: 20,         // Espaciado horizontal interno
     alignItems: 'center',          // Centrar el texto horizontalmente
-    marginTop: 20,                 // Separación superior del resto del contenido
-    width: '80%',                  // Ancho similar al de otros componentes
+    marginTop: 20,                 // Separar del card
   },
-  
   pruebaArduinoText: {
-    color: '#fff',                 // Color de texto blanco para contraste
-    fontSize: 18,                  // Tamaño de fuente
-    fontWeight: 'bold',            // Negrita para resaltar el texto
-  },  
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });

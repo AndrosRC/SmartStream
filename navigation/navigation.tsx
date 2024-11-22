@@ -6,6 +6,7 @@ import Registro from "@/screens/Registro";
 import VisualizarTomas from "@/screens/VisualizarTomas";
 import AgregarToma from "@/screens/AgregarToma";
 import PruebaArduino from "@/screens/PruebaArduino";
+import PerfilUsuario from "@/screens/PerfilUsuario";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +48,14 @@ const MyStack = () => {
             <Stack.Screen
                 name="AgregarToma"
                 component={AgregarToma}
+                options={{
+                    headerShown: false,
+                    headerBackTitleVisible: false,
+                }}
+            />
+            <Stack.Screen
+                name="PerfilUsuario"
+                component={PerfilUsuario}
                 options={{
                     headerShown: false,
                     headerBackTitleVisible: false,
