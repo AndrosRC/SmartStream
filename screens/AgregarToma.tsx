@@ -1,9 +1,48 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
-const AgregarToma = () => {
-  const [selectedValue, setSelectedValue] = useState<string>("regadera");
+const AgregarToma = ({ navigation }: any) => {
+  const PerfilUsuario = () => {
+    navigation.navigate('PerfilUsuario');
+  };
+
+  const [nombreToma, setNombreToma] = useState('');
+  const [tipoToma, setTipoToma] = useState<string>('Regadera');
+
+  const handleGuardar = async () => {
+    if (!nombreToma) {
+      window.alert('El nombre de la toma es obligatorio');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3000/agregarToma', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          nombre_toma: nombreToma,
+          tipo_toma: tipoToma,
+          id_usuario: 1, // Cambiar por el ID del usuario actual si es dinámico
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        window.alert('Toma de agua agregada correctamente');
+        setNombreToma(''); // Limpiar el formulario después de guardar
+        setTipoToma('Regadera');
+      } else {
+        window.alert(data.error || 'No se pudo agregar la toma');
+      }
+    } catch (error) {
+      console.error('Error en el servidor:', error);
+      window.alert('Hubo un problema al conectarse con el servidor');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -13,7 +52,7 @@ const AgregarToma = () => {
           style={styles.logo}
         />
         <Text style={styles.headerTitle}>SmartStream</Text>
-        <TouchableOpacity style={styles.profileButton} onPress={() => console.log('Perfil presionado')}>
+        <TouchableOpacity style={styles.profileButton} onPress={PerfilUsuario}>
           <Image
             source={require('@/assets/images/iconoPerfil.png')}
             style={styles.profileIcon}
@@ -29,22 +68,24 @@ const AgregarToma = () => {
           style={styles.input}
           placeholder="Nombre de la llave"
           placeholderTextColor="#000"
+          value={nombreToma}
+          onChangeText={(text) => setNombreToma(text)}
         />
 
         <Text style={styles.label}>Tipo de llave:</Text>
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={selectedValue}
-            onValueChange={(itemValue) => setSelectedValue(itemValue)}
+            selectedValue={tipoToma}
+            onValueChange={(itemValue) => setTipoToma(itemValue)}
             style={styles.picker}
           >
-            <Picker.Item label="Regadera" value="regadera" />
-            <Picker.Item label="Lavamanos" value="lavamanos" />
-            <Picker.Item label="Lavatrastes" value="lavatrastes" />
+            <Picker.Item label="Regadera" value="Regadera" />
+            <Picker.Item label="Lavamanos" value="Lavamanos" />
+            <Picker.Item label="Lavatrastes" value="Lavatrastes" />
           </Picker>
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={() => console.log('Guardar presionado')}>
+        <TouchableOpacity style={styles.button} onPress={handleGuardar}>
           <Text style={styles.buttonText}>GUARDAR</Text>
         </TouchableOpacity>
       </View>

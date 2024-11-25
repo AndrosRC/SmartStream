@@ -4,6 +4,7 @@ const cors = require('cors'); // Importa el paquete cors
 const connection = require('./db');
 const loginController = require('./routes/inicioSesion.js');
 const registro = require('./routes/registroSesion.js');
+const agregarToma = require('./routes/agregarToma.js');
 
 const app = express();
 const port = 3000;
@@ -14,6 +15,7 @@ app.use(bodyParser.json());
 // Endpoint de inicio de sesión
 app.post('/login', loginController);
 app.post('/registro', registro);
+app.post('/agregarToma', agregarToma);
 
 // Endpoint para obtener los datos de un usuario por ID
 app.get('/usuarios/:id', (req, res) => {

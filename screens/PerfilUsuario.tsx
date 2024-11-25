@@ -10,7 +10,7 @@ const PerfilUsuario = ({ navigation }: any) => {
       try {
         const userId = await AsyncStorage.getItem('userId');
         if (userId) {
-          const response = await fetch(`http://192.168.0.110:3000/usuarios/${userId}`);
+          const response = await fetch(`localhost:3000/usuarios/${userId}`);
           const data = await response.json();
 
           if (response.ok) {
