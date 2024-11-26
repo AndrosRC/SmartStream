@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import EliminarToma from './EliminarToma';
 
 const VisualizarTomas = ({ route, navigation }: any) => {
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const getUserId = async () => {
-      // Intenta obtener el userId desde AsyncStorage si no lo pasaron desde la navegación
       const storedUserId = await AsyncStorage.getItem('userId');
       if (storedUserId) {
         setUserId(storedUserId);
       } else if (route.params?.userId) {
-        // Si el userId fue pasado por navegación, usarlo
         setUserId(route.params.userId);
       } else {
         console.error('No se pudo obtener el userId');
@@ -34,23 +33,21 @@ const VisualizarTomas = ({ route, navigation }: any) => {
     navigation.navigate('PerfilUsuario');
   };
 
+  const VerConsumo = () => {
+    navigation.navigate('VerConsumo');
+  };
+
   if (!userId) {
-    return <Text>Cargando...</Text>; // Espera a que userId esté disponible
+    return <Text>Cargando...</Text>;
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          source={require('@/assets/images/iconoGota.png')}
-          style={styles.logo}
-        />
+        <Image source={require('@/assets/images/iconoGota.png')} style={styles.logo} />
         <Text style={styles.headerTitle}>SmartStream</Text>
         <TouchableOpacity style={styles.profileButton} onPress={PerfilUsuario}>
-          <Image
-            source={require('@/assets/images/iconoPerfil.png')}
-            style={styles.profileIcon}
-          />
+          <Image source={require('@/assets/images/iconoPerfil.png')} style={styles.profileIcon} />
         </TouchableOpacity>
       </View>
 
@@ -62,15 +59,21 @@ const VisualizarTomas = ({ route, navigation }: any) => {
         <Text style={styles.pruebaArduinoText}>Prueba de Arduino</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.addButton} onPress={AgregarToma}>
-        <Text style={styles.addButtonText}>+</Text>
-      </TouchableOpacity>
+      {/* Contenedor para los botones flotantes */}
+      <View style={styles.floatingButtonContainer}>
+        <TouchableOpacity style={styles.addButton} onPress={AgregarToma}>
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.viewConsumptionButton}  onPress={() => navigation.navigate('EliminarToma')}>
+          <Text style={styles.viewConsumptionText}>-</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 };
 
 export default VisualizarTomas;
-
 
 const styles = StyleSheet.create({
   container: {
@@ -115,13 +118,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 100, // Ajusta la altura del card
+    marginTop: 100,
   },
   cardText: {
     color: '#000',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  pruebaArduinoButton: {
+    backgroundColor: '#1a2b4f',
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  pruebaArduinoText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  floatingButtonContainer: {
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 40,
+    right: 20,
+    alignItems: 'center',
   },
   addButton: {
     backgroundColor: '#fff',
@@ -130,9 +153,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'absolute',
-    bottom: 40,
-    right: 40,
+    marginRight: 15,
     borderWidth: 1,
     borderColor: '#000',
   },
@@ -141,17 +162,18 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: 'bold',
   },
-  pruebaArduinoButton: {
-    backgroundColor: '#1a2b4f',    // Un color oscuro similar al del encabezado
-    borderRadius: 10,              // Bordes redondeados
-    paddingVertical: 15,           // Espaciado vertical interno
-    paddingHorizontal: 20,         // Espaciado horizontal interno
-    alignItems: 'center',          // Centrar el texto horizontalmente
-    marginTop: 20,                 // Separar del card
+  viewConsumptionButton: {
+    backgroundColor: '#fff',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#000',
   },
-  pruebaArduinoText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  viewConsumptionText: {
+    color: '#000',
+    fontSize: 30,
   },
 });

@@ -24,10 +24,11 @@ const PerfilUsuario = ({ navigation }: any) => {
             setUsuario(data);
             setUpdatedUser({
               nombre: data.nombre,
-              numero_tel: data.numero_tel || '',
+              numero_tel: data.numero_tel,
               correo_electronico: data.correo_electronico,
               contrasena: '', // Mantener vacío por seguridad
             });
+            console.log(data)
           } else {
             Alert.alert('Error', 'No se pudo obtener los datos del usuario');
           }
@@ -131,7 +132,7 @@ const PerfilUsuario = ({ navigation }: any) => {
           <Image source={require('@/assets/images/iconoPerfil.png')} style={styles.profileIcon} />
           <View style={styles.profileTextContainer}>
             <Text style={styles.userName}>{usuario.nombre}</Text>
-            <Text style={styles.userNumber}>Número: {usuario.numero_tel || 'No proporcionado'}</Text>
+            <Text style={styles.userNumber}>Número: {usuario.numero_tel}</Text>
           </View>
         </View>
 

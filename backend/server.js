@@ -6,6 +6,7 @@ const loginController = require('./routes/inicioSesion.js');
 const registro = require('./routes/registroSesion.js');
 const agregarToma = require('./routes/agregarToma.js');
 const actualizarUsuario = require('./routes/actualizarUsuario');
+const { obtenerTomas, eliminarToma } = require('./routes/eliminarToma.js');
 
 const app = express();
 const port = 3000;
@@ -17,6 +18,11 @@ app.use(bodyParser.json());
 app.post('/login', loginController);
 app.post('/registro', registro);
 app.post('/agregarToma', agregarToma);
+app.get('/getTomas/:userId', obtenerTomas);  // Llamará a obtenerTomas con el userId como parámetro
+
+// Ruta para eliminar una toma
+app.delete('/tomas/:id_toma', eliminarToma);  // Llamará a eliminarToma con el id_toma como parámetro
+
 app.put('/actualizarUsuario/:id', actualizarUsuario);
 
 // Endpoint para obtener los datos de un usuario por ID
@@ -24,7 +30,7 @@ app.get('/usuarios/:id', (req, res) => {
     const userId = req.params.id;
 
     connection.query(
-        'SELECT id_usuario AS id, nombre, correo_electronico, numero_tel AS telefono FROM Usuario WHERE id_usuario = ?',
+        'SELECT id_usuario AS id, nombre, correo_electronico, numero_tel FROM Usuario WHERE id_usuario = ?',
         [userId],
         (err, results) => {
             if (err) {
