@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AgregarToma = ({ navigation }: any) => {
+  const [usuario, setUsuario] = useState<any>(null);
+
   const PerfilUsuario = () => {
     navigation.navigate('PerfilUsuario');
   };
@@ -17,6 +20,7 @@ const AgregarToma = ({ navigation }: any) => {
     }
 
     try {
+      const userId = await AsyncStorage.getItem('userId');
       const response = await fetch('http://localhost:3000/agregarToma', {
         method: 'POST',
         headers: {
@@ -25,7 +29,7 @@ const AgregarToma = ({ navigation }: any) => {
         body: JSON.stringify({
           nombre_toma: nombreToma,
           tipo_toma: tipoToma,
-          id_usuario: 1, // Cambiar por el ID del usuario actual si es dinámico
+          id_usuario: userId, // Cambiar por el ID del usuario actual si es dinámico
         }),
       });
 

@@ -3,6 +3,10 @@ import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, Alert } fro
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = ({ navigation }: any) => {
+    const Registro = () => {
+        navigation.navigate('Registro');
+    };
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -38,13 +42,6 @@ const Home = ({ navigation }: any) => {
         console.error('Error en el servidor:', error);
         Alert.alert('Error', 'Error en el servidor');
       }
-    };
-    
-  
-  
-
-    const Registro = () => {
-        navigation.navigate('Registro');
     };
 
     return (

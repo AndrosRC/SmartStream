@@ -5,6 +5,7 @@ const connection = require('./db');
 const loginController = require('./routes/inicioSesion.js');
 const registro = require('./routes/registroSesion.js');
 const agregarToma = require('./routes/agregarToma.js');
+const actualizarUsuario = require('./routes/actualizarUsuario');
 
 const app = express();
 const port = 3000;
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 app.post('/login', loginController);
 app.post('/registro', registro);
 app.post('/agregarToma', agregarToma);
+app.put('/actualizarUsuario/:id', actualizarUsuario);
 
 // Endpoint para obtener los datos de un usuario por ID
 app.get('/usuarios/:id', (req, res) => {
@@ -53,6 +55,5 @@ app.get('/usuarios', (req, res) => {
 
 // Iniciar el servidor
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Servidor corriendo en http://0.0.0.0:${port}`);
+    console.log(`Servidor corriendo en http://localhost:${port}`);
 });
-  

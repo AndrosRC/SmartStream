@@ -1,6 +1,8 @@
 const connection = require('../db');
 
+
 const agregarToma = (req, res) => {
+  
   const { nombre_toma, tipo_toma, id_usuario } = req.body;
 
   if (!nombre_toma || !tipo_toma || !id_usuario) {

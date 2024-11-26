@@ -1,52 +1,72 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
 const Registro = ({ navigation }: any) => {
+  const Home = () => {
+    navigation.navigate('Home');
+  };
+
   const [nombre, setNombre] = useState('');
+  const [numeroTelefono, setNumeroTelefono] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleRegister = async () => {
-    if (!nombre || !email || !password) {
-      // Usamos window.alert en lugar de Alert.alert para la web
+    // Validaciones básicas
+    if (!nombre || !numeroTelefono || !email || !password) {
       window.alert('Todos los campos son obligatorios');
       return;
     }
-
+  
+    // Validar formato de correo
+    const validacionEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!validacionEmail.test(email)) {
+      window.alert('Por favor, ingresa un correo electrónico válido');
+      return;
+    }
+  
+    // Validar teléfono
+    const validacionTel = /^[0-9]{10}$/; // 10 dígitos numéricos
+    if (!validacionTel.test(numeroTelefono)) {
+      window.alert('Por favor, ingresa un número de teléfono válido (10 dígitos)');
+      return;
+    }
+  
+    // Intento de registro
     try {
       const response = await fetch('http://localhost:3000/registro', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ nombre, correo_electronico: email, contrasena: password }),
+        body: JSON.stringify({
+          nombre,
+          numero_tel: numeroTelefono,
+          correo_electronico: email,
+          contrasena: password,
+        }),
       });
-
+  
       const data = await response.json();
       console.log('Respuesta del servidor:', data);
-
+  
       if (response.ok) {
-        // Usamos window.alert en lugar de Alert.alert para la web
         window.alert('Registro exitoso');
-        
-        // Navegar a Home después de la alerta
         if (navigation) {
           navigation.navigate('Home');
         } else {
-          console.error("Navigation object is not available.");
+          console.error('Navigation object is not available.');
         }
       } else {
         console.log('Error al registrar:', data.message);
-        // Usamos window.alert en lugar de Alert.alert para la web
         window.alert(data.message || 'Error al registrar');
       }
-
     } catch (error) {
       console.error('Error en el servidor:', error);
-      // Usamos window.alert en lugar de Alert.alert para la web
       window.alert('Error en el servidor');
     }
   };
+  
 
   return (
     <View style={styles.container}>
@@ -65,7 +85,6 @@ const Registro = ({ navigation }: any) => {
         />
         <Text style={styles.title}>REGISTRO DE USUARIO</Text>
 
-        {/* Campo para el nombre completo */}
         <Text style={styles.label}>INGRESA TU NOMBRE COMPLETO:</Text>
         <TextInput
           style={styles.input}
@@ -75,7 +94,16 @@ const Registro = ({ navigation }: any) => {
           onChangeText={(text) => setNombre(text)}
         />
 
-        {/* Campo para el correo electrónico */}
+        <Text style={styles.label}>INGRESA TU NÚMERO DE TELÉFONO:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Número de teléfono"
+          placeholderTextColor="#000"
+          keyboardType="phone-pad"
+          value={numeroTelefono}
+          onChangeText={(text) => setNumeroTelefono(text)}
+        />
+
         <Text style={styles.label}>INGRESA TU CORREO:</Text>
         <TextInput
           style={styles.input}
@@ -85,7 +113,6 @@ const Registro = ({ navigation }: any) => {
           onChangeText={(text) => setEmail(text)}
         />
 
-        {/* Campo para la contraseña */}
         <Text style={styles.label}>INGRESA TU CONTRASEÑA:</Text>
         <TextInput
           style={styles.input}
@@ -95,6 +122,10 @@ const Registro = ({ navigation }: any) => {
           value={password}
           onChangeText={(text) => setPassword(text)}
         />
+
+        <TouchableOpacity onPress={Home} style={styles.navegacionLogin}>
+          <Text style={styles.navegacionLogin}>VOLVER AL INICIO DE SESIÓN</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>REGISTRARSE</Text>
@@ -181,4 +212,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  navegacionLogin: {
+    fontSize: 14,
+    color: '#000',
+    marginBottom: 20,
+  }
 });
