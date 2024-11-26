@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#4a6da7',
-    justifyContent: 'center', // Centrar en el eje vertical
-    alignItems: 'center', // Centrar en el eje horizontal
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#1a2b4f',
     width: '100%',
     paddingVertical: 20,
-    position: 'absolute', // Hace que el header se quede en la parte superior
-    top: 0, // Ubicación en la parte superior
+    position: 'absolute',
+    top: 0,
   },
   logo: {
     width: 40,
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     paddingHorizontal: 20,
     alignItems: 'center',
+    marginTop: '20%',
   },
   formIcon: {
     width: 40,
@@ -216,5 +217,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#000',
     marginBottom: 20,
-  }
+  },
 });

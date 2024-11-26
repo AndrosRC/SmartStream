@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, TextInput, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import VisualizarTomas from './VisualizarTomas';
 
 const PerfilUsuario = ({ navigation }: any) => {
+  const VisualizarTomas = () => {
+    navigation.navigate('VisualizarTomas');
+  };
+  
   const [usuario, setUsuario] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [updatedUser, setUpdatedUser] = useState({ nombre: '', numero_tel: '', correo_electronico: '', contrasena: '' });
@@ -119,6 +124,9 @@ const PerfilUsuario = ({ navigation }: any) => {
       </View>
 
       <View style={styles.contentContainer}>
+        <TouchableOpacity onPress={VisualizarTomas} style={styles.navegacion}>
+          <Image source={require('@/assets/images/casa.png')} style={styles.home} />
+        </TouchableOpacity>
         <View style={styles.profileContainer}>
           <Image source={require('@/assets/images/iconoPerfil.png')} style={styles.profileIcon} />
           <View style={styles.profileTextContainer}>
@@ -130,14 +138,6 @@ const PerfilUsuario = ({ navigation }: any) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Correo</Text>
           <Text style={styles.infoText}>{usuario.correo_electronico}</Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Gasto de agua al mes</Text>
-          <Text style={styles.waterUsageItem}>🚿 Regadera: 4800 L</Text>
-          <Text style={styles.waterUsageItem}>🧼 Lavamanos: 120 L</Text>
-          <Text style={styles.waterUsageItem}>🍽️ Lavatrastes: 6720 L</Text>
-          <Text style={styles.totalUsage}>Gasto total al mes: 11,640 L</Text>
         </View>
 
         <TouchableOpacity style={styles.updateButton} onPress={() => setModalVisible(true)}>
@@ -195,9 +195,27 @@ const PerfilUsuario = ({ navigation }: any) => {
 export default PerfilUsuario;
 
 const styles = StyleSheet.create({
+  navegacion: {
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    marginTop: 10,
+    width: 60,
+    height: 60,
+    justifyContent: 'center',
+    position: 'absolute',
+    bottom: 40,
+    right: 40,
+  },
+  navegacionTexto: {
+    color: '#FFFFFF', // Blanco para el texto
+    fontSize: 16,
+    fontWeight: 'bold',
+  },  
   container: {
     flex: 1,
-    backgroundColor: '#003366', // Fondo principal
+    backgroundColor: '#003366',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
@@ -213,8 +231,13 @@ const styles = StyleSheet.create({
   logo: {
     width: 40,
     height: 40,
-    marginRight: 10,
-    },
+    marginRight: 1,
+  },
+  home: {
+    width: 40,
+    height: 40,
+    marginLeft: 20,
+  },
   headerTitle: {
     color: '#fff',
     fontSize: 24,
@@ -228,7 +251,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     width: '100%',
-    backgroundColor: '#4A90E2', // Fondo azul más claro
+    backgroundColor: '#4A90E2',
     paddingTop: 20,
     alignItems: 'center',
   },
@@ -244,7 +267,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#CCCCCC', // Fondo gris claro para el ícono
+    backgroundColor: '#CCCCCC',
   },
   profileTextContainer: {
     marginLeft: 15,
@@ -282,12 +305,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   updateButton: {
-    backgroundColor: '#1a2b4f', // Azul oscuro
     width: '100%',
     paddingVertical: 12,
     borderRadius: 5,
     alignItems: 'center',
-    marginTop: 10, // Espaciado superior opcional
   },
   updateButtonText: {
     color: '#FFFFFF', // Texto blanco para contraste
