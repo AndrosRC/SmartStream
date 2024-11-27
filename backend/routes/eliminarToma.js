@@ -2,15 +2,14 @@ const connection = require('../db');
 
 // Obtener las tomas de agua de un usuario
 const obtenerTomas = (req, res) => {
-  const { userId } = req.params;  // Obtener el userId desde los parámetros de la URL
+  const { userId } = req.params;
 
   if (!userId) {
     return res.status(400).json({ error: 'El userId es obligatorio' });
   }
 
-  // Consulta SQL para obtener las tomas asociadas al usuario
   connection.query(
-    'SELECT * FROM Toma_de_Agua WHERE id_usuario = ?',
+    'SELECT * FROM toma_de_agua WHERE id_usuario = ?',
     [userId],
     (error, results) => {
       if (error) {
@@ -22,7 +21,7 @@ const obtenerTomas = (req, res) => {
         return res.status(404).json({ message: 'No se encontraron tomas para este usuario' });
       }
 
-      return res.status(200).json({ tomas: results });  // Devolver las tomas asociadas al usuario
+      return res.status(200).json({ tomas: results });
     }
   );
 };
@@ -31,12 +30,14 @@ const obtenerTomas = (req, res) => {
 const eliminarToma = (req, res) => {
   const { id_toma } = req.params;
 
+  console.log('ID de la toma recibida para eliminar:', id_toma); // Registro para depuración
+
   if (!id_toma) {
     return res.status(400).json({ error: 'El id_toma es obligatorio' });
   }
 
   connection.query(
-    'DELETE FROM Toma_de_Agua WHERE id_toma = ?',
+    'DELETE FROM toma_de_agua WHERE id_toma = ?',
     [id_toma],
     (error, results) => {
       if (error) {
@@ -44,6 +45,7 @@ const eliminarToma = (req, res) => {
         return res.status(500).json({ error: 'Error en el servidor' });
       }
 
+      console.log('Resultados de la eliminación:', results); // Registro para depuración
       if (results.affectedRows === 0) {
         return res.status(404).json({ message: 'No se encontró la toma especificada' });
       }

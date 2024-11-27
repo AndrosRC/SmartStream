@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EliminarToma = ({ navigation }: any) => {
   const [tomas, setTomas] = useState<any[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false); // Estado para evitar múltiples solicitudes
 
   const PerfilUsuario = () => {
     navigation.navigate('PerfilUsuario');
@@ -12,7 +13,7 @@ const EliminarToma = ({ navigation }: any) => {
   const fetchTomas = async () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
-      const response = await fetch(`http://localhost:3000/getTomas/${userId}`);
+      const response = await fetch(`http://192.168.0.110:3000/getTomas/${userId}`); // Cambia con tu IP del servidor
       const data = await response.json();
       if (response.ok) {
         setTomas(data.tomas);
@@ -30,76 +31,88 @@ const EliminarToma = ({ navigation }: any) => {
   }, []);
 
   const showAlert = (title: string, message: string) => {
-    Alert.alert(title, message, [{ text: 'OK', onPress: () => {} }], { cancelable: false });
+    if (Platform.OS === 'web') {
+      window.alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message, [{ text: 'OK', onPress: () => {} }], { cancelable: false });
+    }
   };
 
   const handleEliminar = async (id_toma: number, nombre_toma: string) => {
-    // Confirmación antes de eliminar
-    Alert.alert(
-      'Confirmar eliminación',
-      `¿Estás seguro de que quieres eliminar la toma de agua "${nombre_toma}"?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Eliminar',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const response = await fetch(`http://localhost:3000/tomas/${id_toma}`, {
-                method: 'DELETE',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              });
+    if (isProcessing) return; // Evita múltiples solicitudes simultáneas
 
-              const data = await response.json();
+    setIsProcessing(true); // Marca como "en proceso"
+    console.log(`Intentando eliminar la toma con id: ${id_toma}, nombre: ${nombre_toma}`);
 
-              if (response.ok) {
-                showAlert('Éxito', 'Toma de agua eliminada correctamente');
-                setTomas(tomas.filter(toma => toma.id_toma !== id_toma)); // Actualiza la lista de tomas localmente
-              } else {
-                showAlert('Error', data.error || 'No se pudo eliminar la toma');
-              }
-            } catch (error) {
-              console.error('Error en el servidor:', error);
-              showAlert('Error', 'Hubo un problema al conectar con el servidor');
-            }
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+    const confirmDelete = Platform.OS === 'web'
+      ? window.confirm(`¿Estás seguro de que quieres eliminar la toma de agua "${nombre_toma}"?`)
+      : await new Promise<boolean>((resolve) =>
+          Alert.alert(
+            'Confirmar eliminación',
+            `¿Estás seguro de que quieres eliminar la toma de agua "${nombre_toma}"?`,
+            [
+              { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
+              { text: 'Eliminar', style: 'destructive', onPress: () => resolve(true) },
+            ],
+            { cancelable: false }
+          )
+        );
+
+    if (!confirmDelete) {
+      setIsProcessing(false); // Libera bloqueo si se cancela
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://192.168.0.110:3000/tomas/${id_toma}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const data = await response.json();
+      console.log('Respuesta del servidor:', data);
+
+      if (response.ok) {
+        setTomas((prevTomas) => prevTomas.filter((toma) => toma.id_toma !== id_toma));
+        showAlert('Éxito', `Toma de agua "${nombre_toma}" eliminada correctamente`);
+      } else {
+        showAlert('Error', data.error || 'No se pudo eliminar la toma');
+      }
+    } catch (error) {
+      console.error('Error en el servidor:', error);
+      showAlert('Error', 'Hubo un problema al conectar con el servidor');
+    } finally {
+      setIsProcessing(false); // Libera bloqueo tras finalizar
+    }
   };
 
   return (
     <View style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
-        <Image
-          source={require('@/assets/images/iconoGota.png')}
-          style={styles.logo}
-        />
+        <Image source={require('@/assets/images/iconoGota.png')} style={styles.logo} />
         <Text style={styles.headerTitle}>SmartStream</Text>
         <TouchableOpacity style={styles.profileButton} onPress={PerfilUsuario}>
-          <Image
-            source={require('@/assets/images/iconoPerfil.png')}
-            style={styles.profileIcon}
-          />
+          <Image source={require('@/assets/images/iconoPerfil.png')} style={styles.profileIcon} />
         </TouchableOpacity>
       </View>
 
+      {/* Content */}
       <View style={styles.card}>
         <Text style={styles.title}>ELIMINAR LLAVE</Text>
-
         <Text style={styles.label}>Tomas disponibles:</Text>
         <View style={styles.pickerContainer}>
           {tomas.map((toma) => (
             <View key={toma.id_toma} style={styles.tomaItem}>
               <Text style={styles.tomaText}>{toma.nombre_toma}</Text>
               <TouchableOpacity
-                style={styles.deleteButton}
+                style={[styles.deleteButton, isProcessing && { backgroundColor: '#ccc' }]} // Cambia estilo si está deshabilitado
                 onPress={() => handleEliminar(toma.id_toma, toma.nombre_toma)}
+                disabled={isProcessing} // Deshabilita si está procesando
               >
-                <Text style={styles.deleteButtonText}>Eliminar</Text>
+                <Text style={styles.deleteButtonText}>
+                  {isProcessing ? 'Procesando...' : 'Eliminar'}
+                </Text>
               </TouchableOpacity>
             </View>
           ))}

@@ -9,14 +9,26 @@
       "distribution": "internal"
     },
     "preview": {
-      "ios":{
+      "ios": {
         "simulator": true
       },
       "android": {
-        "buildType":"apk"
+        "buildType": "app-bundle" 
       }
     },
-    "production": {}
+    "production": {
+      "android": {
+        "buildType": "app-bundle",  
+        "env": {
+          "NODE_ENV": "production"
+        }
+      },
+      "ios": {
+        "env": {
+          "NODE_ENV": "production"
+        }
+      }
+    }
   },
   "submit": {
     "production": {}
