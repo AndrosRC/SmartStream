@@ -13,7 +13,7 @@ const EliminarToma = ({ navigation }: any) => {
   const fetchTomas = async () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
-      const response = await fetch(`http://192.168.0.110:3000/getTomas/${userId}`); // Cambia con tu IP del servidor
+      const response = await fetch(`http://172.31.99.21:3000/getTomas/${userId}`); // Cambia con tu IP del servidor
       const data = await response.json();
       if (response.ok) {
         setTomas(data.tomas);
@@ -64,7 +64,7 @@ const EliminarToma = ({ navigation }: any) => {
     }
 
     try {
-      const response = await fetch(`http://192.168.0.110:3000/tomas/${id_toma}`, {
+      const response = await fetch(`http://172.31.99.21:3000/tomas/${id_toma}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });

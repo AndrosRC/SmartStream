@@ -6,7 +6,8 @@ const loginController = require('./routes/inicioSesion.js');
 const registro = require('./routes/registroSesion.js');
 const agregarToma = require('./routes/agregarToma.js');
 const actualizarUsuario = require('./routes/actualizarUsuario');
-const { obtenerTomas, eliminarToma } = require('./routes/eliminarToma.js');
+const { obtenerTomas, eliminarToma } = require('./routes/eliminarToma');
+const obtenerLlave = require('./routes/obtenerLlave');
 
 const app = express();
 const port = 3000;
@@ -18,7 +19,9 @@ app.use(bodyParser.json());
 app.post('/login', loginController);
 app.post('/registro', registro);
 app.post('/agregarToma', agregarToma);
+
 app.get('/getTomas/:userId', obtenerTomas);  // Llamará a obtenerTomas con el userId como parámetro
+app.get('/getLlave/:id_toma', obtenerLlave); // Llamará a obtenerLlave
 
 // Ruta para eliminar una toma
 app.delete('/tomas/:id_toma', eliminarToma);  // Llamará a eliminarToma con el id_toma como parámetro
@@ -61,6 +64,6 @@ app.get('/usuarios', (req, res) => {
 
 // Iniciar el servidor
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Servidor corriendo en http://localhost:${port}`);
+    console.log(`Servidor corriendo en http://172.31.99.21:${port}`);
 });
 

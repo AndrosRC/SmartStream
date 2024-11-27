@@ -17,7 +17,7 @@ const PerfilUsuario = ({ navigation }: any) => {
       try {
         const userId = await AsyncStorage.getItem('userId');
         if (userId) {
-          const response = await fetch(`http://localhost:3000/usuarios/${userId}`);
+          const response = await fetch(`http://172.31.99.21:3000/usuarios/${userId}`);
           const data = await response.json();
 
           if (response.ok) {
@@ -78,7 +78,7 @@ const PerfilUsuario = ({ navigation }: any) => {
     try {
       const userId = await AsyncStorage.getItem('userId');
       if (userId) {
-        const response = await fetch(`http://localhost:3000/actualizarUsuario/${userId}`, {
+        const response = await fetch(`http://172.31.99.21:3000/actualizarUsuario/${userId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedUser),

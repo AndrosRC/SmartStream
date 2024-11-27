@@ -17,11 +17,8 @@ const obtenerTomas = (req, res) => {
         return res.status(500).json({ error: 'Error en el servidor' });
       }
 
-      if (results.length === 0) {
-        return res.status(404).json({ message: 'No se encontraron tomas para este usuario' });
-      }
-
-      return res.status(200).json({ tomas: results });
+      // Devuelve siempre un array vacío si no hay resultados
+      return res.status(200).json({ tomas: results || [] });
     }
   );
 };

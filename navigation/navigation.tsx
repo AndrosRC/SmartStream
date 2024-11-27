@@ -8,6 +8,7 @@ import AgregarToma from "@/screens/AgregarToma";
 import PruebaArduino from "@/screens/PruebaArduino";
 import PerfilUsuario from "@/screens/PerfilUsuario";
 import EliminarToma from "@/screens/EliminarToma";
+import ConfigurarLlave from "@/screens/ConfigurarLlave";
 
 const Stack = createNativeStackNavigator();
 
@@ -65,6 +66,14 @@ const MyStack = () => {
             <Stack.Screen
                 name="EliminarToma"
                 component={EliminarToma}
+                options={{
+                    headerShown: false,
+                    headerBackTitleVisible: false,
+                }}
+            />
+            <Stack.Screen
+                name="ConfigurarLlave"
+                component={ConfigurarLlave}
                 options={{
                     headerShown: false,
                     headerBackTitleVisible: false,

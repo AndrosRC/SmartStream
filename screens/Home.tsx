@@ -12,7 +12,7 @@ const Home = ({ navigation }: any) => {
 
     const handleLogin = async () => {
       try {
-        const response = await fetch('http://localhost:3000/login', {
+        const response = await fetch('http://172.31.99.21:3000/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

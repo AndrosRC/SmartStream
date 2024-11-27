@@ -21,7 +21,7 @@ const AgregarToma = ({ navigation }: any) => {
 
     try {
       const userId = await AsyncStorage.getItem('userId');
-      const response = await fetch('http://localhost:3000/agregarToma', {
+      const response = await fetch('http://172.31.99.21:3000/agregarToma', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,6 +39,7 @@ const AgregarToma = ({ navigation }: any) => {
         window.alert('Toma de agua agregada correctamente');
         setNombreToma(''); // Limpiar el formulario después de guardar
         setTipoToma('Regadera');
+        
       } else {
         window.alert(data.error || 'No se pudo agregar la toma');
       }
