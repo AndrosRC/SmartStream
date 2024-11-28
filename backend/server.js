@@ -64,6 +64,6 @@ app.get('/usuarios', (req, res) => {
 
 // Iniciar el servidor
 app.listen(port, '0.0.0.0', () => {
-    console.log(`Servidor corriendo en http://172.31.99.21:${port}`);
+    console.log(`Servidor corriendo en http://192.168.0.110:${port}`);
 });
 

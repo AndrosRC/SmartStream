@@ -13,7 +13,7 @@ const EliminarToma = ({ navigation }: any) => {
   const fetchTomas = async () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
-      const response = await fetch(`http://172.31.99.21:3000/getTomas/${userId}`); // Cambia con tu IP del servidor
+      const response = await fetch(`http://192.168.0.110:3000/getTomas/${userId}`); // Cambia con tu IP del servidor
       const data = await response.json();
       if (response.ok) {
         setTomas(data.tomas);
@@ -64,7 +64,7 @@ const EliminarToma = ({ navigation }: any) => {
     }
 
     try {
-      const response = await fetch(`http://172.31.99.21:3000/tomas/${id_toma}`, {
+      const response = await fetch(`http://192.168.0.110:3000/tomas/${id_toma}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -86,6 +86,10 @@ const EliminarToma = ({ navigation }: any) => {
     }
   };
 
+  const handleRegresar = () => {
+    navigation.goBack(); // Regresar a la pantalla anterior
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -102,21 +106,32 @@ const EliminarToma = ({ navigation }: any) => {
         <Text style={styles.title}>ELIMINAR LLAVE</Text>
         <Text style={styles.label}>Tomas disponibles:</Text>
         <View style={styles.pickerContainer}>
-          {tomas.map((toma) => (
-            <View key={toma.id_toma} style={styles.tomaItem}>
-              <Text style={styles.tomaText}>{toma.nombre_toma}</Text>
-              <TouchableOpacity
-                style={[styles.deleteButton, isProcessing && { backgroundColor: '#ccc' }]} // Cambia estilo si está deshabilitado
-                onPress={() => handleEliminar(toma.id_toma, toma.nombre_toma)}
-                disabled={isProcessing} // Deshabilita si está procesando
-              >
-                <Text style={styles.deleteButtonText}>
-                  {isProcessing ? 'Procesando...' : 'Eliminar'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ))}
+          {tomas.length === 0 ? (
+            <Text style={styles.noTomasText}>No hay llaves por eliminar</Text>
+          ) : (
+            tomas.map((toma) => (
+              <View key={toma.id_toma} style={styles.tomaItem}>
+                <Text style={styles.tomaText}>{toma.nombre_toma}</Text>
+                <TouchableOpacity
+                  style={[styles.deleteButton, isProcessing && { backgroundColor: '#ccc' }]} // Cambia estilo si está deshabilitado
+                  onPress={() => handleEliminar(toma.id_toma, toma.nombre_toma)}
+                  disabled={isProcessing} // Deshabilita si está procesando
+                >
+                  <Text style={styles.deleteButtonText}>
+                    {isProcessing ? 'Procesando...' : 'Eliminar'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
         </View>
+        
+        <TouchableOpacity
+          style={styles.regresarButton}
+          onPress={handleRegresar}
+        >
+          <Text style={styles.regresarButtonText}>Regresar</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -205,5 +220,23 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     color: '#fff',
     fontSize: 14,
+  },
+  noTomasText: {
+    fontSize: 16,
+    color: '#333',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  regresarButton: {
+    backgroundColor: '#e74c3c',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  regresarButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

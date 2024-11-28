@@ -27,7 +27,7 @@ const VisualizarTomas = ({ route, navigation }: any) => {
   // Función para obtener las tomas del backend
   const fetchTomas = async (userId: string) => {
     try {
-      const response = await fetch(`http://172.31.99.21:3000/getTomas/${userId}`); // Reemplaza con tu URL del backend
+      const response = await fetch(`http://192.168.0.110:3000/getTomas/${userId}`); // Reemplaza con tu URL del backend
       const data = await response.json();
       if (response.ok) {
         setTomas(data.tomas || []); // Asegura que se establezca un array vacío si no hay datos

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, Image } from 'react-native';
+import { View, Text, StyleSheet, Button, Image, TouchableOpacity, Switch, TextInput } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 
-const ConfigurarLlave = () => {
+const ConfigurarLlave = ({ navigation }: any) => {
   const route = useRoute();
   const { tomaId } = route.params;
 
@@ -11,12 +11,14 @@ const ConfigurarLlave = () => {
   const [toma, setToma] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true); // Estado de carga
   const [error, setError] = useState<string | null>(null); // Estado de error
+  const [tiempo, setTiempo] = useState<string>(''); // Estado para el tiempo
+  const [isOpen, setIsOpen] = useState<boolean>(false); // Estado para el switch (abierto o cerrado)
 
   useEffect(() => {
     if (tomaId) {
       const fetchToma = async () => {
         try {
-          const response = await fetch(`http://172.31.99.21:3000/getLlave/${tomaId}`);
+          const response = await fetch(`http://192.168.0.110:3000/getLlave/${tomaId}`);
           const data = await response.json();
           console.log('Datos obtenidos:', data); // Verifica los datos recibidos
 
@@ -72,16 +74,73 @@ const ConfigurarLlave = () => {
     }
   };
 
+  const handleRegresar = () => {
+    navigation.goBack(); // Regresar a la pantalla anterior
+  };
+
+  const handleGuardar = () => {
+    // Lógica para guardar los cambios (en este caso, la duración y el estado de la llave)
+    console.log('Tiempo: ', tiempo);
+    console.log('Estado de la llave: ', isOpen ? 'Abierta' : 'Cerrada');
+    // Aquí agregarías la lógica para actualizar la toma en el servidor si es necesario
+  };
+
+  const PerfilUsuario = () => {
+    navigation.navigate('PerfilUsuario');
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Configurar Llave</Text>
-      <Text>Nombre: {toma?.nombre_toma}</Text>
-      <Text>Tipo: {toma?.tipo_toma}</Text>
+      {/* Barra de navegación superior */}
+      <View style={styles.header}>
+        <Image source={require('@/assets/images/iconoGota.png')} style={styles.logo} />
+        <Text style={styles.headerTitle}>SmartStream</Text>
+        <TouchableOpacity style={styles.profileButton} onPress={PerfilUsuario}>
+          <Image source={require('@/assets/images/iconoPerfil.png')} style={styles.profileIcon} />
+        </TouchableOpacity>
+      </View>
 
-      {/* Mostrar la imagen correspondiente al tipo de toma */}
-      <Image source={getImageForType(toma.tipo_toma)} style={styles.image} />
+      {/* Contenido de la pantalla */}
+      <View style={styles.content}>
+        <View style={styles.card}>
+          <Text style={styles.title}>Configurar Llave</Text>
+          {/* Nombres más grandes */}
+          <Text style={styles.nombreToma}>Nombre: {toma?.nombre_toma}</Text>
+          <Text style={styles.tipoToma}>Tipo: {toma?.tipo_toma}</Text>
 
-      <Button title="Guardar cambios" onPress={() => { /* Lógica para guardar cambios */ }} />
+          {/* Mostrar la imagen correspondiente al tipo de toma */}
+          <Image source={getImageForType(toma.tipo_toma)} style={styles.image} />
+
+          {/* Formulario para configurar el tiempo de la llave */}
+          <Text style={styles.label}>Tiempo de apertura (en minutos):</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={tiempo}
+            onChangeText={setTiempo}
+            placeholder="Ej. 30 minutos"
+          />
+
+          {/* Switch para abrir o cerrar la llave */}
+          <View style={styles.switchContainer}>
+            <Text style={styles.label}>Estado de la llave:</Text>
+            <Switch
+              value={isOpen}
+              onValueChange={setIsOpen}
+              trackColor={{ false: '#767577', true: '#81b0ff' }}
+              thumbColor={isOpen ? '#f5dd4b' : '#f4f3f4'}
+            />
+            <Text style={styles.switchLabel}>{isOpen ? 'Abierta' : 'Cerrada'}</Text>
+          </View>
+
+          <Button title="Guardar cambios" onPress={handleGuardar} />
+
+          {/* Botón de regresar */}
+          <TouchableOpacity style={styles.regresarButton} onPress={handleRegresar}>
+            <Text style={styles.regresarButtonText}>Regresar</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -89,19 +148,109 @@ const ConfigurarLlave = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#dbe9f7', // Fondo azul claro
+  },
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#1a2b4f',
+    width: '100%',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    position: 'absolute',
+    top: 0,
+    zIndex: 1,
+  },
+  logo: {
+    width: 40,
+    height: 40,
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  profileButton: {
+    padding: 5,
+  },
+  profileIcon: {
+    width: 30,
+    height: 30,
+  },
+  content: {
+    marginTop: 100, // Ajusta el margen superior para evitar que se solape con la barra de navegación
     padding: 20,
+    alignItems: 'center',
+  },
+  card: {
+    backgroundColor: '#fff', // Fondo blanco para el contenido
+    padding: 20,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    width: '100%',
+    maxWidth: 400,
+    alignItems: 'center', // Centra todo dentro del card
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
   },
+  nombreToma: {
+    fontSize: 17, // Aumenta el tamaño del nombre
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  tipoToma: {
+    fontSize: 17, // Aumenta el tamaño del tipo de toma
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
   image: {
-    width: 100,
-    height: 100,
+    width: 150, // Hacer la imagen un poco más grande
+    height: 150,
     marginVertical: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    alignSelf: 'flex-start',
+    marginBottom: 5,
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 10,
+    marginBottom: 15,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  switchLabel: {
+    marginLeft: 10,
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  regresarButton: {
+    backgroundColor: '#e74c3c',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  regresarButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

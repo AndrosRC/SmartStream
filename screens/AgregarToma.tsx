@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AgregarToma = ({ navigation }: any) => {
-  const [usuario, setUsuario] = useState<any>(null);
-
-  const PerfilUsuario = () => {
-    navigation.navigate('PerfilUsuario');
-  };
-
   const [nombreToma, setNombreToma] = useState('');
   const [tipoToma, setTipoToma] = useState<string>('Regadera');
 
@@ -21,7 +15,7 @@ const AgregarToma = ({ navigation }: any) => {
 
     try {
       const userId = await AsyncStorage.getItem('userId');
-      const response = await fetch('http://172.31.99.21:3000/agregarToma', {
+      const response = await fetch('http://192.168.0.110:3000/agregarToma', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,7 +23,7 @@ const AgregarToma = ({ navigation }: any) => {
         body: JSON.stringify({
           nombre_toma: nombreToma,
           tipo_toma: tipoToma,
-          id_usuario: userId, // Cambiar por el ID del usuario actual si es dinámico
+          id_usuario: userId,
         }),
       });
 
@@ -39,7 +33,6 @@ const AgregarToma = ({ navigation }: any) => {
         window.alert('Toma de agua agregada correctamente');
         setNombreToma(''); // Limpiar el formulario después de guardar
         setTipoToma('Regadera');
-        
       } else {
         window.alert(data.error || 'No se pudo agregar la toma');
       }
@@ -52,16 +45,10 @@ const AgregarToma = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image
-          source={require('@/assets/images/iconoGota.png')}
-          style={styles.logo}
-        />
+        <Image source={require('@/assets/images/iconoGota.png')} style={styles.logo} />
         <Text style={styles.headerTitle}>SmartStream</Text>
-        <TouchableOpacity style={styles.profileButton} onPress={PerfilUsuario}>
-          <Image
-            source={require('@/assets/images/iconoPerfil.png')}
-            style={styles.profileIcon}
-          />
+        <TouchableOpacity style={styles.profileButton} onPress={() => navigation.navigate('PerfilUsuario')}>
+          <Image source={require('@/assets/images/iconoPerfil.png')} style={styles.profileIcon} />
         </TouchableOpacity>
       </View>
 
@@ -92,6 +79,11 @@ const AgregarToma = ({ navigation }: any) => {
 
         <TouchableOpacity style={styles.button} onPress={handleGuardar}>
           <Text style={styles.buttonText}>GUARDAR</Text>
+        </TouchableOpacity>
+
+        {/* Botón para regresar */}
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Text style={styles.backButtonText}>REGRESAR</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -186,6 +178,21 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  // Estilos para el botón "Regresar"
+  backButton: {
+    backgroundColor: '#ff5c5c',
+    width: '100%',
+    height: 40,
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  backButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
